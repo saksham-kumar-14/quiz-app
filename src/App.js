@@ -1,48 +1,32 @@
-import React, {useState} from 'react'; 
-import style from './Styles/style.css'
-import Sheet from './Components/questions_sheet';
-import Questions from './Components/questions_api';
-import Result from './Components/result';
+import "./Styles/style.css";
+import QuestionsApi from "./Components/questions_api";
+import { useState } from "react";
+import QuestionsSheet from "./Components/question_sheet";
+import Result from "./Components/result";
 
-function is_present(arr,q_index){
-  for(let i=0;i<arr.length;i++){
-    if(q_index === arr[i]){
-      return true;
+const App = () => {
+
+  const arr = []
+  while(arr.length<5){
+    let element = QuestionsApi[Math.floor(Math.random()*(QuestionsApi.length-1))];
+    while(arr.includes(element)){
+      element = QuestionsApi[Math.floor(Math.random()*(QuestionsApi.length-1))];
     }
+    arr.push(element)
   }
-  return false; 
-}
-
-const App=()=>{
-  let arr = []; 
-  for(let i=0;i<4;i++){
-    let q_index = Math.floor(Math.random()*12); 
-    while(is_present(arr,q_index)){
-      q_index = Math.floor(Math.random()*12); 
-    }
-
-    arr.push(q_index)
-  }
-  let new_arr = []
-  for(let i=0;i<arr.length;i++){
-    new_arr.push(Questions[arr[i]]);    
-  }
-
-  const[quiz_questions,set_quiz_questions] = useState(new_arr);
-  const [submitted,set_submitted] = useState(false); 
-  const[score,set_score] = useState(0);
+  const [all_questions, set_all_questions] = useState(arr);
+  const [done, set_done] = useState(false);
+  const [score, set_score] = useState("not submitted yet"); 
 
   return(
-    <>
-      <h1 className="heading">Quiz</h1>
-      {submitted && <Result set_quiz_questions={set_quiz_questions} set_submitted={set_submitted} score={score} max_score={quiz_questions.length}/>}
-      {!submitted &&
-      <div className="questions-sheet-div">
-        <Sheet set_score={set_score} set_submitted={set_submitted} quiz_questions={quiz_questions} set_quiz_questions={set_quiz_questions}/> 
-      </div>
-      }
-    </>
-  )    
+    <div className="app-div">
+      <h1 className="heading">QUIZ</h1>
+
+      {done? <Result set_all_questions={set_all_questions} set_done={set_done} score={score} set_score={set_score}/> 
+      : <QuestionsSheet all_questions={all_questions} set_all_questions={set_all_questions} done={done} set_done={set_done} set_score={set_score} />}
+
+    </div>
+  )
 }
 
-export default App 
+export default App;

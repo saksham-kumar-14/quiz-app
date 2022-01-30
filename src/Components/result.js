@@ -1,54 +1,42 @@
-import react from "react";
-import Questions from "./questions_api";
+import QuestionsApi from "./questions_api";
 
-function is_present(arr,q_index){
-    for(let i=0;i<arr.length;i++){
-      if(q_index === arr[i]){
-        return true;
-      }
-    }
-    return false; 
-  }
+const Result=({score, set_score, set_all_questions, set_done})=>{
 
-function retest(set_quiz_questions,set_submitted){
-    for(let i=0;i<Questions.length;i++){
-        Questions[i].selected_option = ""
+    const handle_clear=(QuestionsApi)=>{
+        let result = []
+        QuestionsApi.map((e)=>{
+            e.selected_option = "";
+            result.push(e)
+        })
+        return result;
     }
-    let arr = []; 
-    for(let i=0;i<4;i++){
-        let q_index = Math.floor(Math.random()*12); 
-        while(is_present(arr,q_index)){
-        q_index = Math.floor(Math.random()*12); 
+
+    const handle_reset = () => {
+        let questions_api = handle_clear(QuestionsApi)
+
+        let arr = [];
+        while(arr.length<5){
+            let element = questions_api[Math.floor(Math.random()*(questions_api.length-1))]
+            while(arr.includes(element)){
+                element = questions_api[Math.floor(Math.random()*(questions_api.length-1))]
+            }
+            arr.push(element);
         }
 
-        arr.push(q_index)
-    }
-    let new_arr = []
-    for(let i=0;i<arr.length;i++){
-        new_arr.push(Questions[arr[i]]);    
+        set_all_questions(arr)
+        set_score(0)
+        set_done(false)
     }
 
-    set_quiz_questions(new_arr)
-    set_submitted(false); 
-}
-
-const Result=({set_quiz_questions, set_submitted, score,max_score})=>{
-    
     return(
-        <div className="result-page-outer">
-            <div className="result-page">
-                <span className="score-displayer">
-                Score : <span className="user-score">{score} </span> 
-                Out of <span className="max-score"> {max_score}</span> 
-                </span>
+        <div className="result-div">
+            <p>Your score : <span> {score} </span></p>
 
-                <button className="re-test-btn" onClick={()=>{
-                    retest(set_quiz_questions,set_submitted)
-                }}>Re-test</button>
-            </div>
-
+            <button onClick={()=>{
+                handle_reset()
+            }}>Reset</button>
         </div>
     )
 }
 
-export default Result
+export default Result;
